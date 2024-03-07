@@ -23,7 +23,7 @@ Line0Text:      DEFB $EA                        ; REM
 
 START
        LD BC, $FFFF                             ; Initial CRC value $FFFF
-       EXX                                      ; Store CRC in HL'
+       EXX                                      ; Swap to alternate registers
        PUSH HL                                  ; Save HL' register used by FP calculator
        LD HL, $0000                             ; ROM starts at address $0000
        ;LD HL, $40D0                             ; Test string starts at address $40D0
@@ -33,36 +33,38 @@ START
 
 LOOP
 
-       LDI                                      ; Copy a byte from ROM to unused area
-       DEC DE                                   ; Point back to the start of the current word
-       
+       LDI                                      ; Copy a byte from ROM to unused area and decrement counter
+       DEC DE                                   ; Point back to the stored byte
+
        LD A,(DE)                                ; Load the byte into the accumulator
-       
+
        EXX                                      ; Get the CRC
-       
-       XOR B                                    ; A = crc >> 8 ^ A
-       LD B,A
+
+       XOR B                                    ; Step 1) A = crc >> 8 ^ A
+
+       LD B,A                                   ; Step 2) A ^= A >> 4
        SRL B
        SRL B
        SRL B
        SRL B
-       XOR B                                    ; A ^= A >> 4
-       
-       LD B,C                                   ; Now calculate the following:
-       LD C,A                                   ; crc = (crc << 8) ^ (x << 12) ^ (x <<5) ^ x
+       XOR B
+
+                                                ; Step 3) crc = (crc << 8) ^ (A << 12) ^ (A <<5) ^ A
+       LD B,C                                   ;  3a) crc_upper = crc_lower
+       LD C,A                                   ;  Since C is no longer needed, use it to store A for later
        SLA A
        SLA A
        SLA A
        SLA A
        XOR B
-       LD B,A
+       LD B,A                                   ;  3b) crc_upper ^= A << (12 - 8)
        LD A,C
        SRL A
        SRL A
        SRL A
        XOR B
-       LD B,A                                   ; Upper byte of CRC is done
-
+       LD B,A                                   ;  3c) crc_upper ^= A << (5 - 8) => A >> 3
+                                                ; Upper byte of CRC is done
        LD A,C
        SLA A
        SLA A
@@ -70,12 +72,13 @@ LOOP
        SLA A
        SLA A
        XOR C
-       LD C,A                                   ; Lower byte of CRC is done
-       
-       EXX                                      ; Store CRC in HL' and return regs for loop
+       LD C,A                                   ;  3d) crc_lower = A ^ (A << 5)
+                                                ; Lower byte of CRC is done
+
+       EXX                                      ; Leave CRC in BC and return to alternate regs for loop
+
        LD A,B
        OR C
-       
        JR NZ,LOOP                               ; done when both B and C are zero
 
        POP HL                                   ; Restore HL' register
