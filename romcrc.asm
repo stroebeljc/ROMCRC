@@ -23,22 +23,14 @@ Line0Text:      DEFB $EA                        ; REM
 
 START
        LD BC, $FFFF                             ; Initial CRC value $FFFF
-       EXX                                      ; Swap to alternate registers
-       PUSH HL                                  ; Save HL' register used by FP calculator
        LD HL, $0000                             ; ROM starts at address $0000
-       ;LD HL, $40D0                             ; Test string starts at address $40D0
-       LD BC, $2000                             ; ROM size is 8k ($0000 = 64k bytes)
-       ;LD BC, $0009                             ; Test string size is 9 bytes
-       LD DE, UNUSED1                           ; Scratch byte
+       ;LD HL, $40C6                             ; Test string starts at address $40C6
+       LD DE, $2000                             ; ROM size is 8k ($0000 = 64k bytes)
+       ;LD DE, $0009                             ; Test string size is 9 bytes
 
 LOOP
 
-       LDI                                      ; Copy a byte from ROM to unused area and decrement counter
-       DEC DE                                   ; Point back to the stored byte
-
-       LD A,(DE)                                ; Load the byte into the accumulator
-
-       EXX                                      ; Get the CRC
+       LD A,(HL)                                ; Load the byte into the accumulator
 
        XOR B                                    ; Step 1) A = crc >> 8 ^ A
 
@@ -75,14 +67,11 @@ LOOP
        LD C,A                                   ;  3d) crc_lower = A ^ (A << 5)
                                                 ; Lower byte of CRC is done
 
-       EXX                                      ; Leave CRC in BC and return to alternate regs for loop
-
-       LD A,B
-       OR C
-       JR NZ,LOOP                               ; done when both B and C are zero
-
-       POP HL                                   ; Restore HL' register
-       EXX
+       INC HL                                   ; Point to next address
+       DEC DE                                   ; Decrease loop counter
+       LD A,D
+       OR E
+       JR NZ,LOOP                               ; done when both D and E are zero
 
        RET                                      ; CRC value returned to BASIC in BC
 

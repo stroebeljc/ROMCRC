@@ -33,7 +33,7 @@ FRAMES:         DEFW $f5a3
 COORDS:         DEFW 0
 PR_CC:          DEFB $bc
 S_POSN:         DEFW $1801
-CDFLAG:         DEFB $40
+CDFLAG:         DEFB $00
 PRBUFF:         DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,$76 ; 32 Spaces + Newline
 MEMBOT:         DEFB 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ; 30 zeros
 UNUSED2:        DEFW 0
