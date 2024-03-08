@@ -18,10 +18,19 @@ Line10End
 Line20          DEFB $00,20                     ; Line 20
                 DEFW Line20End-Line20Text       ; Line length
 Line20Text      DEFB $F5                        ; PRINT
-                DEFB _QT,_R,_O,_M,__,_C,_R,_C,_1,_6,_MI,_C,_C,_I,_T,_T,_EQ,_QT,_SC ; "ROM CRC16-CCITT=";
+                DEFB _QT,_C,_R,_C,_1,_6,_SL,_C,_C,_I,_T,_T,_MI,_F,_A,_L,_S,_E,_EQ,_QT,_SC ; "CRC16/CCITT-FALSE=";
                 DEFB _C,_R,_C                   ; CRC
                 DEFB _NL                        ; Newline
 Line20End 
+
+Line25          DEFB $00,25                     ; Line 25
+                DEFW Line25End-Line25Text       ; Line length
+Line25Text      DEFB $F5                        ; PRINT
+                DEFB _QT,_C,_R,_C,_1,_6,_SL,_X,_M,_O,_D,_E,_M,_EQ,_QT,_SC ; "CRC16/XMODEM=";
+                DEFB $D4                        ; USR
+                DEFB _1,_6,_5,_1,_9,$7E,$8F,$01,$0E,$00,$00 ; 16519
+                DEFB _NL                        ; Newline
+Line25End 
 
 Line30          DEFB $00,30                     ; Line 30
                 DEFW Line30End-Line30Text       ; Line length

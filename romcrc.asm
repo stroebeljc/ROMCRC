@@ -21,8 +21,14 @@ Line0:          DEFB $00,0                      ; Line 0
 Line0Text:      DEFB $EA                        ; REM
 
 
+CFALS
+       LD BC, $FFFF                             ; Initial CRC value for CRC-16/CCITT-FALSE is $FFFF
+       JR START
+
+CXMOD
+       LD BC, $0000                             ; Initial CRC value for CRC-16/XMODEM is $0000
+
 START
-       LD BC, $FFFF                             ; Initial CRC value $FFFF
        LD HL, $0000                             ; ROM starts at address $0000
        ;LD HL, $40C6                             ; Test string starts at address $40C6
        LD DE, $2000                             ; ROM size is 8k ($0000 = 64k bytes)
